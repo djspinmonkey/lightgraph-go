@@ -1,0 +1,17 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Actor {
+  backingApiUrl: String!
+  apiKey: String!
+  test: String!
+}
+
+type Query {
+  actor: Actor!
+}
+
+type Mutation {
+  doSomething(task: String!): String!
+}
