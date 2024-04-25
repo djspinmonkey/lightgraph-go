@@ -12,6 +12,8 @@ type Project struct {
 }
 
 // FetchProject submits a GET request to the REST API for the project with the given org and project IDs.
+//
+// I'd like this to be in the restapi package, but it's not clear how to do that without creating a circular dependency.
 func FetchProject(orgID string, projectID string) (*Project, error) {
 	response, err := restapi.GetResource("/" + orgID + "/projects/" + projectID)
 	if err != nil {
