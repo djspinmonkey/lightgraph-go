@@ -1,6 +1,11 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
+type Query {
+  actor: Actor!
+    organization(id: ID!): Organization
+}
+
+type Mutation {
+  doSomething(task: String!): String!
+}
 
 type Actor {
   backingApiUrl: String!
@@ -8,10 +13,13 @@ type Actor {
   test: String!
 }
 
-type Query {
-  actor: Actor!
+type Organization {
+  id: ID!
+  name: String!
+  project(id: ID!): Project!
 }
 
-type Mutation {
-  doSomething(task: String!): String!
+type Project {
+  id: ID!
+  name: String!
 }

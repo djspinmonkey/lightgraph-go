@@ -89,10 +89,11 @@ models:
   Actor:
     model:
       - github.com/djspinmonkey/lightgraph-go/graph/model.Actor
-    fields:
-      apiKey:
-        resolver: true
-      backingApiUrl:
-        resolver: true
-      test:
-        resolver: true
+
+  Organization:
+    model:
+      - github.com/djspinmonkey/lightgraph-go/graph/model.Organization
+
+  Project:
+    model:
+      - github.com/djspinmonkey/lightgraph-go/graph/model.Project

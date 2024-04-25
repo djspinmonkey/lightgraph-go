@@ -7,31 +7,14 @@ package graph
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/djspinmonkey/lightgraph-go/graph/model"
 )
 
-// BackingAPIURL is the resolver for the backingApiURL field.
-func (r *actorResolver) BackingAPIURL(ctx context.Context, obj *model.Actor) (string, error) {
-	// TODO: Retrieve the value actually used by the real client library, once it exists.
-	return os.Getenv("LS_PUBLICAPI_URL"), nil
-}
-
-// APIKey is the resolver for the apiKey field.
-func (r *actorResolver) APIKey(ctx context.Context, obj *model.Actor) (string, error) {
-	// TODO: Retrieve the value actually used by the real client library, once it exists.
-	return os.Getenv("LS_TOKEN"), nil
-}
-
-// Test is the resolver for the test field.
-func (r *actorResolver) Test(ctx context.Context, obj *model.Actor) (string, error) {
-	return "You have successfully queried this test field!", nil
-}
-
 // DoSomething is a sample resolver for a mutation.
 func (r *mutationResolver) DoSomething(ctx context.Context, task string) (string, error) {
-	return fmt.Sprintf("It is technically possible that I may have performed the following task: %s", task), nil
+	// Totally do the thing.
+	return fmt.Sprintf("It is technically possible that I may have done this thing: %s", task), nil
 }
 
 // Actor is the resolver for the actor field.
@@ -39,8 +22,10 @@ func (r *queryResolver) Actor(ctx context.Context) (*model.Actor, error) {
 	return &model.Actor{}, nil
 }
 
-// Actor returns ActorResolver implementation.
-func (r *Resolver) Actor() ActorResolver { return &actorResolver{r} }
+// Organization is the resolver for the organization field.
+func (r *queryResolver) Organization(ctx context.Context, id string) (*model.Organization, error) {
+	return &model.Organization{ID: id, Name: "Organization Name"}, nil
+}
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
@@ -48,6 +33,5 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
-type actorResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
