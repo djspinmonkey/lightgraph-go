@@ -85,6 +85,11 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
+  Float:
+    model:
+      - github.com/99designs/gqlgen/graphql.Float
+      - github.com/99designs/gqlgen/graphql.Float64
+      - github.com/99designs/gqlgen/graphql.Float32
 
   Actor:
     model:
@@ -97,3 +102,11 @@ models:
   Project:
     model:
       - github.com/djspinmonkey/lightgraph-go/graph/model.Project
+
+  Alert:
+    model:
+      - github.com/djspinmonkey/lightgraph-go/graph/model.Alert
+
+  Label:
+    model:
+      - github.com/djspinmonkey/lightgraph-go/graph/model.Label

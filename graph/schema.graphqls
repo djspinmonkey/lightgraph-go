@@ -22,4 +22,23 @@ type Organization {
 type Project {
   id: ID!
   name: String!
+  alerts: [Alert!]
+  alert(id: ID!): Alert
+}
+
+type Label {
+  key: String!
+  value: String!
+}
+
+type Alert {
+  id: ID!
+  name: String!
+  description: String!
+  labels: [Label]
+  enableNoDataAlert: Boolean
+  enableNoDataDuration: Int
+  operand: String
+  warningThreshold: Float
+  criticalThreshold: Float
 }
