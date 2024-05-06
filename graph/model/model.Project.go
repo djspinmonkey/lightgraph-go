@@ -46,7 +46,7 @@ func FetchProject(org *Organization, projectID string) (*Project, error) {
 	return project, nil
 }
 
-// Alerts fetches all alerts for the project.
+// Alerts returns all alerts for the project. It caches the alerts after the first request.
 func (p *Project) Alerts() ([]*Alert, error) {
 	if p.alerts == nil {
 		var err error

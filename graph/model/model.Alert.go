@@ -1,11 +1,13 @@
 package model
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"github.com/djspinmonkey/lightgraph-go/restapi"
 )
 
+// Alert represents a single metric alert.
 type Alert struct {
 	ID                   string
 	Name                 string
@@ -19,6 +21,33 @@ type Alert struct {
 	Project              *Project
 }
 
+// Alerts is a collection of Alert objects. It's mostly just used for JSON parsing purposes.
+type Alerts []*Alert
+
+// JsonShapedAlerts is an intermediate representation of the JSON data returned by the API.
+//
+// I would love to parse the JSON straight into the desired struct without this intermediate representation, but
+// this seems to be The Go Way™.
+type JsonShapedAlerts struct {
+	Data []struct {
+		ID         string `json:"id"`
+		Attributes struct {
+			Name        string  `json:"name"`
+			Description string  `json:"description"`
+			Labels      []Label `json:"labels"`
+			Expression  struct {
+				Operand           string `json:"operand"`
+				EnableNoDataAlert bool   `json:"enable-no-data-alert"`
+				NoDataDuration    int    `json:"no-data-duration-ms"`
+				Thresholds        struct {
+					Warning  float64 `json:"warning"`
+					Critical float64 `json:"critical"`
+				}
+			}
+		}
+	}
+}
+
 // FetchAlerts fetches all alerts for a given project from the backing API.
 //
 // I'd like this to be in the restapi package, but it's not clear how to do that without creating a circular dependency.
@@ -28,47 +57,42 @@ func FetchAlerts(project *Project) ([]*Alert, error) {
 		return nil, errors.New("Failed to fetch alerts: " + err.Error())
 	}
 
-	// This intermediate representation seems to be required in Go in order to get the deeply nested JSON data into a
-	// flat Go struct (ie, Project). I'd love to find a better way to do this!
-	var jsonShapedAlerts struct {
-		Data []struct {
-			ID         string `json:"id"`
-			Attributes struct {
-				Name        string  `json:"name"`
-				Description string  `json:"description"`
-				Labels      []Label `json:"labels"`
-				Expression  struct {
-					Operand           string `json:"operand"`
-					EnableNoDataAlert bool   `json:"enable-no-data-alert"`
-					NoDataDuration    int    `json:"no-data-duration-ms"`
-					Thresholds        struct {
-						Warning  float64 `json:"warning"`
-						Critical float64 `json:"critical"`
-					}
-				}
-			}
-		}
-	}
-	err = json.NewDecoder(response.Body).Decode(&jsonShapedAlerts)
+	var alerts Alerts
+	err = json.NewDecoder(response.Body).Decode(&alerts)
 	if err != nil {
 		return nil, errors.New("Failed to parse alerts: " + err.Error())
 	}
 
-	alerts := make([]*Alert, len(jsonShapedAlerts.Data))
-	for i, jsonAlert := range jsonShapedAlerts.Data {
-		alerts[i] = &Alert{
-			ID:                   jsonAlert.ID,
-			Name:                 jsonAlert.Attributes.Name,
-			Description:          jsonAlert.Attributes.Description,
-			Labels:               jsonAlert.Attributes.Labels,
-			EnableNoDataAlert:    jsonAlert.Attributes.Expression.EnableNoDataAlert,
-			EnableNoDataDuration: jsonAlert.Attributes.Expression.NoDataDuration,
-			Operand:              jsonAlert.Attributes.Expression.Operand,
-			WarningThreshold:     jsonAlert.Attributes.Expression.Thresholds.Warning,
-			CriticalThreshold:    jsonAlert.Attributes.Expression.Thresholds.Critical,
-			Project:              project,
-		}
+	for _, alert := range alerts {
+		alert.Project = project
 	}
 
 	return alerts, nil
+}
+
+// UnmarshalJSON parses the JSON data returned by the API into a collection of Alert structs. Note that the receiver
+// is a pointer to Alerts, not a single Alert.
+func (a *Alerts) UnmarshalJSON(rawJson []byte) error {
+	var parsedJson JsonShapedAlerts
+	jsonReader := bytes.NewReader(rawJson)
+	err := json.NewDecoder(jsonReader).Decode(&parsedJson)
+	if err != nil {
+		return err
+	}
+
+	for _, d := range parsedJson.Data {
+		*a = append(*a, &Alert{
+			ID:                   d.ID,
+			Name:                 d.Attributes.Name,
+			Description:          d.Attributes.Description,
+			Labels:               d.Attributes.Labels,
+			EnableNoDataAlert:    d.Attributes.Expression.EnableNoDataAlert,
+			EnableNoDataDuration: d.Attributes.Expression.NoDataDuration,
+			Operand:              d.Attributes.Expression.Operand,
+			WarningThreshold:     d.Attributes.Expression.Thresholds.Warning,
+			CriticalThreshold:    d.Attributes.Expression.Thresholds.Critical,
+		})
+	}
+
+	return nil
 }
