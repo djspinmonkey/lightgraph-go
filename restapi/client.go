@@ -50,3 +50,6 @@ func GetResource(path string) (*http.Response, error) {
 
 	return resp, nil
 }
+
+// TODO: Move the various FetchFoo functions to be in the restapi package.
+// However, it's not clear how to do that without creating a circular dependency.

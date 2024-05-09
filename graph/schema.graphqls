@@ -41,4 +41,30 @@ type Alert {
   operand: String
   warningThreshold: Float
   criticalThreshold: Float
+  alertingRules: [AlertingRule]!
+  destinations: [AlertDestination]!
+}
+
+type AlertingRule {
+  id: ID!
+  updateInterval: Int
+  destination: AlertDestination!
+}
+
+type AlertDestination {
+  id: ID!
+  name: String!
+  type: String!
+  channel: String
+  scope: String
+  url: String
+  customHeaders: [CustomHeader]
+  bodyTemplate: String
+  integrationKey: String
+  serviceNowAuth: String
+}
+
+type CustomHeader {
+  key: String!
+  value: String!
 }

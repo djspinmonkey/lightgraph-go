@@ -24,7 +24,7 @@ func (r *queryResolver) Actor(ctx context.Context) (*model.Actor, error) {
 
 // Organization is the resolver for the organization field.
 func (r *queryResolver) Organization(ctx context.Context, id string) (*model.Organization, error) {
-	return &model.Organization{ID: id, Name: "Organization Name"}, nil
+	return &model.Organization{ID: id, Name: id}, nil
 }
 
 // Mutation returns MutationResolver implementation.
