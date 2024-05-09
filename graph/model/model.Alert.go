@@ -20,6 +20,7 @@ type Alert struct {
 	CriticalThreshold    float64
 	Project              *Project
 	AlertingRules        []*AlertingRule
+	snoozification       *Snoozification
 }
 
 // Alerts is a collection of Alert objects. It's mostly just used for JSON parsing purposes.
@@ -47,6 +48,21 @@ type JsonShapedAlerts struct {
 	}
 }
 
+// Snoozification represents the current snooze status of an alert.
+type Snoozification struct {
+	snoozed bool
+	until   int64
+}
+
+// JsonShapedSnoozifications is an intermediate representation of the JSON data returned by the API.
+type JsonShapedSnoozifications struct {
+	Data []struct {
+		Attributes struct {
+			Until int64 `json:"ends-micros"`
+		}
+	}
+}
+
 // Destinations returns all destinations associated with the alert. This may involve fetching the destinations from the
 // API if they haven't been fetched yet.
 func (a *Alert) Destinations() ([]*AlertDestination, error) {
@@ -62,6 +78,35 @@ func (a *Alert) Destinations() ([]*AlertDestination, error) {
 	}
 
 	return destinations, nil
+}
+
+// Snoozed returns true if the alert is snoozed, false otherwise. This will likely involve a request to the API.
+func (a *Alert) Snoozed() (bool, error) {
+	if a.snoozification == nil {
+		s, err := a.FetchSnoozification()
+		if err != nil {
+			return false, err
+		}
+
+		a.snoozification = &s
+	}
+
+	return a.snoozification.snoozed, nil
+}
+
+// SnoozedUntil returns the time the alert is snoozed until, or 0 if the alert isn't snoozed. This will likely
+// involve a request to the API.
+func (a *Alert) SnoozedUntil() (int64, error) {
+	if a.snoozification == nil {
+		s, err := a.FetchSnoozification()
+		if err != nil {
+			return 0, err
+		}
+
+		a.snoozification = &s
+	}
+
+	return a.snoozification.until, nil
 }
 
 // UnmarshalJSON parses the JSON data returned by the API into a collection of Alert structs. Note that the receiver
@@ -121,13 +166,28 @@ func FetchAlerts(p *Project) ([]*Alert, error) {
 	return alerts, nil
 }
 
-// Snoozed returns true if the alert is snoozed, false otherwise. This will likely involve a request to the API.
-func (a *Alert) Snoozed() (bool, error) {
-	return false, nil
-}
+// FetchSnoozification fetches the Snoozification status for the alert from the backing API.
+func (a *Alert) FetchSnoozification() (Snoozification, error) {
+	response, err := restapi.GetResource("/" + a.Project.Organization.ID + "/projects/" + a.Project.ID + "/metric_alerts/" + a.ID + "/snoozes")
+	if err != nil {
+		return Snoozification{}, errors.New("Failed to fetch Snoozification: " + err.Error())
+	}
 
-// SnoozedUntil returns the time the alert is snoozed until, or 0 if the alert isn't snoozed. This will likely
-// involve a request to the API.
-func (a *Alert) SnoozedUntil() (int64, error) {
-	return 0, nil
+	var jsonShapedSnoozifications JsonShapedSnoozifications
+	err = json.NewDecoder(response.Body).Decode(&jsonShapedSnoozifications)
+	if err != nil {
+		return Snoozification{}, errors.New("Failed to parse Snoozification: " + err.Error())
+	}
+
+	if len(jsonShapedSnoozifications.Data) == 0 {
+		return Snoozification{
+			snoozed: false,
+			until:   0,
+		}, nil
+	}
+
+	return Snoozification{
+		snoozed: true,
+		until:   jsonShapedSnoozifications.Data[0].Attributes.Until,
+	}, nil
 }
