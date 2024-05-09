@@ -1,70 +1,77 @@
 type Query {
-  actor: Actor!
-  organization(id: ID!): Organization
+    actor: Actor!
+    organization(id: ID!): Organization
 }
 
 type Mutation {
-  doSomething(task: String!): String!
+    doSomething(task: String!): String!
 }
 
 type Actor {
-  backingApiUrl: String!
-  apiKey: String!
-  test: String!
+    backingApiUrl: String!
+    apiKey: String!
+    test: String!
 }
 
 type Organization {
-  id: ID!
-  name: String!
-  project(id: ID!): Project!
+    id: ID!
+    name: String!
+    project(id: ID!): Project!
 }
 
 type Project {
-  id: ID!
-  name: String!
-  alerts: [Alert!]
-  alert(id: ID!): Alert
-}
-
-type Label {
-  key: String!
-  value: String!
+    id: ID!
+    name: String!
+    alerts: [Alert!]
+    alert(id: ID!): Alert
 }
 
 type Alert {
-  id: ID!
-  name: String!
-  description: String!
-  labels: [Label]
-  enableNoDataAlert: Boolean
-  enableNoDataDuration: Int
-  operand: String
-  warningThreshold: Float
-  criticalThreshold: Float
-  alertingRules: [AlertingRule]!
-  destinations: [AlertDestination]!
+    id: ID!
+    name: String!
+    description: String!
+    labels: [Label]
+    enableNoDataAlert: Boolean
+    enableNoDataDuration: Int
+    operand: String
+    warningThreshold: Float
+    criticalThreshold: Float
+    alertingRules: [AlertingRule]!
+    destinations: [AlertDestination]!
+    snoozed: Boolean!
+    snoozedUntil: Int
 }
 
 type AlertingRule {
-  id: ID!
-  updateInterval: Int
-  destination: AlertDestination!
+    id: ID!
+    updateInterval: Int
+    destination: AlertDestination!
 }
 
 type AlertDestination {
-  id: ID!
-  name: String!
-  type: String!
-  channel: String
-  scope: String
-  url: String
-  customHeaders: [CustomHeader]
-  bodyTemplate: String
-  integrationKey: String
-  serviceNowAuth: String
+    id: ID!
+    name: String!
+    type: String!
+    channel: String
+    scope: String
+    url: String
+    customHeaders: [CustomHeader]
+    bodyTemplate: String
+    integrationKey: String
+    serviceNowAuth: [AuthValue]
+}
+
+type Label {
+    key: String!
+    value: String!
 }
 
 type CustomHeader {
-  key: String!
-  value: String!
+    key: String!
+    value: String!
+}
+
+type AuthValue {
+    key: String!
+    value: String!
 }

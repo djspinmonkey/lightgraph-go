@@ -120,3 +120,14 @@ func FetchAlerts(p *Project) ([]*Alert, error) {
 
 	return alerts, nil
 }
+
+// Snoozed returns true if the alert is snoozed, false otherwise. This will likely involve a request to the API.
+func (a *Alert) Snoozed() (bool, error) {
+	return false, nil
+}
+
+// SnoozedUntil returns the time the alert is snoozed until, or 0 if the alert isn't snoozed. This will likely
+// involve a request to the API.
+func (a *Alert) SnoozedUntil() (int64, error) {
+	return 0, nil
+}

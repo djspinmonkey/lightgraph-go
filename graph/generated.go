@@ -64,12 +64,15 @@ type ComplexityRoot struct {
 		Labels               func(childComplexity int) int
 		Name                 func(childComplexity int) int
 		Operand              func(childComplexity int) int
+		Snoozed              func(childComplexity int) int
+		SnoozedUntil         func(childComplexity int) int
 		WarningThreshold     func(childComplexity int) int
 	}
 
 	AlertDestination struct {
 		BodyTemplate   func(childComplexity int) int
 		Channel        func(childComplexity int) int
+		CustomHeaders  func(childComplexity int) int
 		ID             func(childComplexity int) int
 		IntegrationKey func(childComplexity int) int
 		Name           func(childComplexity int) int
@@ -83,6 +86,16 @@ type ComplexityRoot struct {
 		Destination    func(childComplexity int) int
 		ID             func(childComplexity int) int
 		UpdateInterval func(childComplexity int) int
+	}
+
+	AuthValue struct {
+		Key   func(childComplexity int) int
+		Value func(childComplexity int) int
+	}
+
+	CustomHeader struct {
+		Key   func(childComplexity int) int
+		Value func(childComplexity int) int
 	}
 
 	Label struct {
@@ -231,6 +244,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Alert.Operand(childComplexity), true
 
+	case "Alert.snoozed":
+		if e.complexity.Alert.Snoozed == nil {
+			break
+		}
+
+		return e.complexity.Alert.Snoozed(childComplexity), true
+
+	case "Alert.snoozedUntil":
+		if e.complexity.Alert.SnoozedUntil == nil {
+			break
+		}
+
+		return e.complexity.Alert.SnoozedUntil(childComplexity), true
+
 	case "Alert.warningThreshold":
 		if e.complexity.Alert.WarningThreshold == nil {
 			break
@@ -251,6 +278,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AlertDestination.Channel(childComplexity), true
+
+	case "AlertDestination.customHeaders":
+		if e.complexity.AlertDestination.CustomHeaders == nil {
+			break
+		}
+
+		return e.complexity.AlertDestination.CustomHeaders(childComplexity), true
 
 	case "AlertDestination.id":
 		if e.complexity.AlertDestination.ID == nil {
@@ -321,6 +355,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AlertingRule.UpdateInterval(childComplexity), true
+
+	case "AuthValue.key":
+		if e.complexity.AuthValue.Key == nil {
+			break
+		}
+
+		return e.complexity.AuthValue.Key(childComplexity), true
+
+	case "AuthValue.value":
+		if e.complexity.AuthValue.Value == nil {
+			break
+		}
+
+		return e.complexity.AuthValue.Value(childComplexity), true
+
+	case "CustomHeader.key":
+		if e.complexity.CustomHeader.Key == nil {
+			break
+		}
+
+		return e.complexity.CustomHeader.Key(childComplexity), true
+
+	case "CustomHeader.value":
+		if e.complexity.CustomHeader.Value == nil {
+			break
+		}
+
+		return e.complexity.CustomHeader.Value(childComplexity), true
 
 	case "Label.key":
 		if e.complexity.Label.Key == nil {
@@ -1281,6 +1343,8 @@ func (ec *executionContext) fieldContext_Alert_destinations(ctx context.Context,
 				return ec.fieldContext_AlertDestination_scope(ctx, field)
 			case "url":
 				return ec.fieldContext_AlertDestination_url(ctx, field)
+			case "customHeaders":
+				return ec.fieldContext_AlertDestination_customHeaders(ctx, field)
 			case "bodyTemplate":
 				return ec.fieldContext_AlertDestination_bodyTemplate(ctx, field)
 			case "integrationKey":
@@ -1289,6 +1353,91 @@ func (ec *executionContext) fieldContext_Alert_destinations(ctx context.Context,
 				return ec.fieldContext_AlertDestination_serviceNowAuth(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AlertDestination", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Alert_snoozed(ctx context.Context, field graphql.CollectedField, obj *model.Alert) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Alert_snoozed(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Snoozed()
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Alert_snoozed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Alert",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Alert_snoozedUntil(ctx context.Context, field graphql.CollectedField, obj *model.Alert) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Alert_snoozedUntil(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnoozedUntil()
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalOInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Alert_snoozedUntil(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Alert",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1549,6 +1698,53 @@ func (ec *executionContext) fieldContext_AlertDestination_url(ctx context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _AlertDestination_customHeaders(ctx context.Context, field graphql.CollectedField, obj *model.AlertDestination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AlertDestination_customHeaders(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CustomHeaders, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.CustomHeader)
+	fc.Result = res
+	return ec.marshalOCustomHeader2ᚕᚖgithubᚗcomᚋdjspinmonkeyᚋlightgraphᚑgoᚋgraphᚋmodelᚐCustomHeader(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AlertDestination_customHeaders(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AlertDestination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "key":
+				return ec.fieldContext_CustomHeader_key(ctx, field)
+			case "value":
+				return ec.fieldContext_CustomHeader_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CustomHeader", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _AlertDestination_bodyTemplate(ctx context.Context, field graphql.CollectedField, obj *model.AlertDestination) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_AlertDestination_bodyTemplate(ctx, field)
 	if err != nil {
@@ -1654,9 +1850,9 @@ func (ec *executionContext) _AlertDestination_serviceNowAuth(ctx context.Context
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.([]*model.AuthValue)
 	fc.Result = res
-	return ec.marshalOString2string(ctx, field.Selections, res)
+	return ec.marshalOAuthValue2ᚕᚖgithubᚗcomᚋdjspinmonkeyᚋlightgraphᚑgoᚋgraphᚋmodelᚐAuthValue(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_AlertDestination_serviceNowAuth(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1666,7 +1862,13 @@ func (ec *executionContext) fieldContext_AlertDestination_serviceNowAuth(ctx con
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "key":
+				return ec.fieldContext_AuthValue_key(ctx, field)
+			case "value":
+				return ec.fieldContext_AuthValue_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AuthValue", field.Name)
 		},
 	}
 	return fc, nil
@@ -1808,6 +2010,8 @@ func (ec *executionContext) fieldContext_AlertingRule_destination(ctx context.Co
 				return ec.fieldContext_AlertDestination_scope(ctx, field)
 			case "url":
 				return ec.fieldContext_AlertDestination_url(ctx, field)
+			case "customHeaders":
+				return ec.fieldContext_AlertDestination_customHeaders(ctx, field)
 			case "bodyTemplate":
 				return ec.fieldContext_AlertDestination_bodyTemplate(ctx, field)
 			case "integrationKey":
@@ -1816,6 +2020,182 @@ func (ec *executionContext) fieldContext_AlertingRule_destination(ctx context.Co
 				return ec.fieldContext_AlertDestination_serviceNowAuth(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AlertDestination", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AuthValue_key(ctx context.Context, field graphql.CollectedField, obj *model.AuthValue) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AuthValue_key(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Key, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AuthValue_key(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AuthValue",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AuthValue_value(ctx context.Context, field graphql.CollectedField, obj *model.AuthValue) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AuthValue_value(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AuthValue_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AuthValue",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CustomHeader_key(ctx context.Context, field graphql.CollectedField, obj *model.CustomHeader) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CustomHeader_key(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Key, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CustomHeader_key(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CustomHeader",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CustomHeader_value(ctx context.Context, field graphql.CollectedField, obj *model.CustomHeader) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CustomHeader_value(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CustomHeader_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CustomHeader",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2263,6 +2643,10 @@ func (ec *executionContext) fieldContext_Project_alerts(ctx context.Context, fie
 				return ec.fieldContext_Alert_alertingRules(ctx, field)
 			case "destinations":
 				return ec.fieldContext_Alert_destinations(ctx, field)
+			case "snoozed":
+				return ec.fieldContext_Alert_snoozed(ctx, field)
+			case "snoozedUntil":
+				return ec.fieldContext_Alert_snoozedUntil(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Alert", field.Name)
 		},
@@ -2328,6 +2712,10 @@ func (ec *executionContext) fieldContext_Project_alert(ctx context.Context, fiel
 				return ec.fieldContext_Alert_alertingRules(ctx, field)
 			case "destinations":
 				return ec.fieldContext_Alert_destinations(ctx, field)
+			case "snoozed":
+				return ec.fieldContext_Alert_snoozed(ctx, field)
+			case "snoozedUntil":
+				return ec.fieldContext_Alert_snoozedUntil(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Alert", field.Name)
 		},
@@ -4465,6 +4853,13 @@ func (ec *executionContext) _Alert(ctx context.Context, sel ast.SelectionSet, ob
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "snoozed":
+			out.Values[i] = ec._Alert_snoozed(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "snoozedUntil":
+			out.Values[i] = ec._Alert_snoozedUntil(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4520,6 +4915,8 @@ func (ec *executionContext) _AlertDestination(ctx context.Context, sel ast.Selec
 			out.Values[i] = ec._AlertDestination_scope(ctx, field, obj)
 		case "url":
 			out.Values[i] = ec._AlertDestination_url(ctx, field, obj)
+		case "customHeaders":
+			out.Values[i] = ec._AlertDestination_customHeaders(ctx, field, obj)
 		case "bodyTemplate":
 			out.Values[i] = ec._AlertDestination_bodyTemplate(ctx, field, obj)
 		case "integrationKey":
@@ -4569,6 +4966,94 @@ func (ec *executionContext) _AlertingRule(ctx context.Context, sel ast.Selection
 			out.Values[i] = ec._AlertingRule_updateInterval(ctx, field, obj)
 		case "destination":
 			out.Values[i] = ec._AlertingRule_destination(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var authValueImplementors = []string{"AuthValue"}
+
+func (ec *executionContext) _AuthValue(ctx context.Context, sel ast.SelectionSet, obj *model.AuthValue) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, authValueImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AuthValue")
+		case "key":
+			out.Values[i] = ec._AuthValue_key(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "value":
+			out.Values[i] = ec._AuthValue_value(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var customHeaderImplementors = []string{"CustomHeader"}
+
+func (ec *executionContext) _CustomHeader(ctx context.Context, sel ast.SelectionSet, obj *model.CustomHeader) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, customHeaderImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CustomHeader")
+		case "key":
+			out.Values[i] = ec._CustomHeader_key(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "value":
+			out.Values[i] = ec._CustomHeader_value(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -5688,6 +6173,54 @@ func (ec *executionContext) marshalOAlertingRule2ᚖgithubᚗcomᚋdjspinmonkey�
 	return ec._AlertingRule(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOAuthValue2ᚕᚖgithubᚗcomᚋdjspinmonkeyᚋlightgraphᚑgoᚋgraphᚋmodelᚐAuthValue(ctx context.Context, sel ast.SelectionSet, v []*model.AuthValue) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOAuthValue2ᚖgithubᚗcomᚋdjspinmonkeyᚋlightgraphᚑgoᚋgraphᚋmodelᚐAuthValue(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOAuthValue2ᚖgithubᚗcomᚋdjspinmonkeyᚋlightgraphᚑgoᚋgraphᚋmodelᚐAuthValue(ctx context.Context, sel ast.SelectionSet, v *model.AuthValue) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AuthValue(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5714,6 +6247,54 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
+func (ec *executionContext) marshalOCustomHeader2ᚕᚖgithubᚗcomᚋdjspinmonkeyᚋlightgraphᚑgoᚋgraphᚋmodelᚐCustomHeader(ctx context.Context, sel ast.SelectionSet, v []*model.CustomHeader) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOCustomHeader2ᚖgithubᚗcomᚋdjspinmonkeyᚋlightgraphᚑgoᚋgraphᚋmodelᚐCustomHeader(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOCustomHeader2ᚖgithubᚗcomᚋdjspinmonkeyᚋlightgraphᚑgoᚋgraphᚋmodelᚐCustomHeader(ctx context.Context, sel ast.SelectionSet, v *model.CustomHeader) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CustomHeader(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalOFloat2float64(ctx context.Context, v interface{}) (float64, error) {
 	res, err := graphql.UnmarshalFloat(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5731,6 +6312,16 @@ func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v interface{}
 
 func (ec *executionContext) marshalOInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
 	res := graphql.MarshalInt(v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOInt2int64(ctx context.Context, v interface{}) (int64, error) {
+	res, err := graphql.UnmarshalInt64(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
+	res := graphql.MarshalInt64(v)
 	return res
 }
 

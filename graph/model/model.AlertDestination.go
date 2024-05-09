@@ -12,12 +12,12 @@ type AlertDestination struct {
 	Name            string
 	DestinationType string
 	Url             string
-	CustomHeaders   map[string]string
+	CustomHeaders   []*CustomHeader
 	Channel         string
 	Scope           string
 	BodyTemplate    string
 	IntegrationKey  string
-	ServiceNowAuth  map[string]string
+	ServiceNowAuth  []*AuthValue
 	Project         *Project
 }
 
@@ -74,17 +74,27 @@ func FetchAlertDestinations(project *Project) ([]*AlertDestination, error) {
 
 	alertDestinations := make([]*AlertDestination, len(jsonShapedAlertDestinations.Data))
 	for i, alertDestination := range jsonShapedAlertDestinations.Data {
+		var authValues []*AuthValue
+		for k, v := range alertDestination.Attributes.ServiceNowAuth {
+			authValues = append(authValues, &AuthValue{Key: k, Value: v})
+		}
+
+		var customHeaders []*CustomHeader
+		for k, v := range alertDestination.Attributes.CustomHeaders {
+			customHeaders = append(customHeaders, &CustomHeader{Key: k, Value: v})
+		}
+
 		alertDestinations[i] = &AlertDestination{
 			ID:              alertDestination.ID,
 			Name:            alertDestination.Attributes.Name,
 			DestinationType: alertDestination.Attributes.DestinationType,
 			Url:             alertDestination.Attributes.Url,
-			CustomHeaders:   alertDestination.Attributes.CustomHeaders,
+			CustomHeaders:   customHeaders,
 			Channel:         alertDestination.Attributes.Channel,
 			Scope:           alertDestination.Attributes.Scope,
 			BodyTemplate:    alertDestination.Attributes.BodyTemplate,
 			IntegrationKey:  alertDestination.Attributes.IntegrationKey,
-			ServiceNowAuth:  alertDestination.Attributes.ServiceNowAuth,
+			ServiceNowAuth:  authValues,
 			Project:         project,
 		}
 	}
