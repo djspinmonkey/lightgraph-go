@@ -7,6 +7,9 @@ import (
 	"github.com/djspinmonkey/lightgraph-go/restapi"
 )
 
+// TODO: Add query strings to the Alert struct.
+// TODO: Handle composite alerts.
+
 // Alert represents a single metric alert.
 type Alert struct {
 	ID                   string
