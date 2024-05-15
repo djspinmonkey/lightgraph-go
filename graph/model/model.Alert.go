@@ -10,6 +10,8 @@ import (
 // TODO: Add query strings to the Alert struct.
 // TODO: Handle composite alerts.
 
+const UnknownStatus = "unknown"
+
 // Alert represents a single metric alert.
 type Alert struct {
 	ID                   string
@@ -21,6 +23,7 @@ type Alert struct {
 	Operand              string
 	WarningThreshold     float64
 	CriticalThreshold    float64
+	status               string
 	Project              *Project
 	AlertingRules        []*AlertingRule
 	snoozification       *Snoozification
@@ -47,6 +50,15 @@ type JsonShapedAlerts struct {
 					Critical float64 `json:"critical"`
 				}
 			}
+		}
+	}
+}
+
+// JsonShapedAlertStatus is an intermediate representation of the JSON data returned by the API.
+type JsonShapedAlertStatus struct {
+	Data struct {
+		Attributes struct {
+			Status string `json:"status"`
 		}
 	}
 }
@@ -81,6 +93,27 @@ func (a *Alert) Destinations() ([]*AlertDestination, error) {
 	}
 
 	return destinations, nil
+}
+
+// Status returns the current status of the alert. This will likely involve a request to the API.
+func (a *Alert) Status() (string, error) {
+	if a.status == UnknownStatus {
+		response, err := restapi.GetResource("/" + a.Project.Organization.ID + "/projects/" + a.Project.ID + "/metric_alerts/" + a.ID + "/status")
+		if err != nil {
+			return "", errors.New("Failed to fetch alert status: " + err.Error())
+		}
+
+		status := JsonShapedAlertStatus{}
+
+		err = json.NewDecoder(response.Body).Decode(&status)
+		if err != nil {
+			return "", errors.New("Failed to parse alert status: " + err.Error())
+		}
+
+		a.status = status.Data.Attributes.Status
+	}
+
+	return a.status, nil
 }
 
 // Snoozed returns true if the alert is snoozed, false otherwise. This will likely involve a request to the API.
@@ -134,6 +167,7 @@ func (a *Alerts) UnmarshalJSON(rawJson []byte) error {
 			Operand:              d.Attributes.Expression.Operand,
 			WarningThreshold:     d.Attributes.Expression.Thresholds.Warning,
 			CriticalThreshold:    d.Attributes.Expression.Thresholds.Critical,
+			status:               UnknownStatus,
 		}
 
 		for _, rule := range alert.AlertingRules {

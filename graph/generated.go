@@ -66,6 +66,7 @@ type ComplexityRoot struct {
 		Operand              func(childComplexity int) int
 		Snoozed              func(childComplexity int) int
 		SnoozedUntil         func(childComplexity int) int
+		Status               func(childComplexity int) int
 		WarningThreshold     func(childComplexity int) int
 	}
 
@@ -272,6 +273,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Alert.SnoozedUntil(childComplexity), true
+
+	case "Alert.status":
+		if e.complexity.Alert.Status == nil {
+			break
+		}
+
+		return e.complexity.Alert.Status(childComplexity), true
 
 	case "Alert.warningThreshold":
 		if e.complexity.Alert.WarningThreshold == nil {
@@ -1356,6 +1364,47 @@ func (ec *executionContext) fieldContext_Alert_criticalThreshold(ctx context.Con
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Alert_status(ctx context.Context, field graphql.CollectedField, obj *model.Alert) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Alert_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status()
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Alert_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Alert",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3176,6 +3225,8 @@ func (ec *executionContext) fieldContext_Project_alerts(ctx context.Context, fie
 				return ec.fieldContext_Alert_warningThreshold(ctx, field)
 			case "criticalThreshold":
 				return ec.fieldContext_Alert_criticalThreshold(ctx, field)
+			case "status":
+				return ec.fieldContext_Alert_status(ctx, field)
 			case "alertingRules":
 				return ec.fieldContext_Alert_alertingRules(ctx, field)
 			case "destinations":
@@ -3245,6 +3296,8 @@ func (ec *executionContext) fieldContext_Project_alert(ctx context.Context, fiel
 				return ec.fieldContext_Alert_warningThreshold(ctx, field)
 			case "criticalThreshold":
 				return ec.fieldContext_Alert_criticalThreshold(ctx, field)
+			case "status":
+				return ec.fieldContext_Alert_status(ctx, field)
 			case "alertingRules":
 				return ec.fieldContext_Alert_alertingRules(ctx, field)
 			case "destinations":
@@ -5457,6 +5510,8 @@ func (ec *executionContext) _Alert(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = ec._Alert_warningThreshold(ctx, field, obj)
 		case "criticalThreshold":
 			out.Values[i] = ec._Alert_criticalThreshold(ctx, field, obj)
+		case "status":
+			out.Values[i] = ec._Alert_status(ctx, field, obj)
 		case "alertingRules":
 			out.Values[i] = ec._Alert_alertingRules(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
