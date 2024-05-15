@@ -1,6 +1,7 @@
 type Query {
     actor: Actor!
     organization(id: ID!): Organization
+    ci(sysID: ID!, className: String!): CI!
 }
 
 type Mutation {
@@ -59,6 +60,19 @@ type AlertDestination {
     bodyTemplate: String
     integrationKey: String
     serviceNowAuth: [AuthValue]
+}
+
+type CI {
+    className: String!
+    sysID: ID!
+    name: String
+    assetTag: ID
+    subCategory: String
+    serialNumber: String
+    assetLink: String
+    assetDisplayValue: String
+    assetValue: String
+    attributesJSON: String
 }
 
 type Label {
