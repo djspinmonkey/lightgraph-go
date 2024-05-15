@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/djspinmonkey/lightgraph-go/restapi"
+	"strings"
 )
 
 // TODO: Add query strings to the Alert struct.
@@ -232,11 +233,31 @@ func (a *Alert) FetchSnoozification() (Snoozification, error) {
 // AssociatedCIs returns the set of CIs associated with this Alert. It will likely require 1 request per CI to
 // the backing ServiceNow API.
 func (a *Alert) AssociatedCIs() ([]*CI, error) {
-	return []*CI{}, nil
+	var cis []*CI
+	for _, ciIdentifier := range a.AssociatedCIIdentifiers() {
+		ci, err := FetchCI(ciIdentifier)
+		if err != nil {
+			return nil, err
+		}
+
+		cis = append(cis, ci)
+	}
+
+	return cis, nil
 }
 
 // AssociatedCIIdentifiers returns the set of CIIdentifiers associated with this Alert. This function should _not_
 // require any requests to an API, as it is derived from the Alert data.
-func (a *Alert) AssociatedCIIdentifiers() ([]*CIIdentifier, error) {
-	return []*CIIdentifier{}, nil
+func (a *Alert) AssociatedCIIdentifiers() []*CIIdentifier {
+	var ciIdentifiers []*CIIdentifier
+	for _, label := range a.Labels {
+		if label.Key == "sn_ci" {
+			ciIdentifiers = append(ciIdentifiers, &CIIdentifier{
+				SysID:     label.Value[:strings.Index(label.Value, ":")],
+				ClassName: label.Value[strings.Index(label.Value, ":")+1:],
+			})
+		}
+	}
+
+	return ciIdentifiers
 }
