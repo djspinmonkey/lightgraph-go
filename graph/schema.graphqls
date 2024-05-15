@@ -32,6 +32,8 @@ type Alert {
     name: String!
     description: String!
     labels: [Label]
+    associatedCIIdentifiers: [CIIdentifier]
+    associatedCIs: [CI]
     enableNoDataAlert: Boolean
     enableNoDataDuration: Int
     operand: String
@@ -64,8 +66,7 @@ type AlertDestination {
 }
 
 type CI {
-    className: String!
-    sysID: ID!
+    ciIdentifier: CIIdentifier
     name: String
     assetTag: ID
     subCategory: String
@@ -74,6 +75,11 @@ type CI {
     assetDisplayValue: String
     assetValue: String
     attributesJSON: String
+}
+
+type CIIdentifier {
+    className: String
+    sysId: String
 }
 
 type Label {

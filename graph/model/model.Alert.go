@@ -228,3 +228,15 @@ func (a *Alert) FetchSnoozification() (Snoozification, error) {
 		until:   jsonShapedSnoozifications.Data[0].Attributes.Until,
 	}, nil
 }
+
+// AssociatedCIs returns the set of CIs associated with this Alert. It will likely require 1 request per CI to
+// the backing ServiceNow API.
+func (a *Alert) AssociatedCIs() ([]*CI, error) {
+	return []*CI{}, nil
+}
+
+// AssociatedCIIdentifiers returns the set of CIIdentifiers associated with this Alert. This function should _not_
+// require any requests to an API, as it is derived from the Alert data.
+func (a *Alert) AssociatedCIIdentifiers() ([]*CIIdentifier, error) {
+	return []*CIIdentifier{}, nil
+}
