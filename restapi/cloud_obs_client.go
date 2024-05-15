@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-// ApiKey retrieves the API key from the environment.
-func ApiKey() string {
+// CloudObsApiKey retrieves the API key from the environment.
+func CloudObsApiKey() string {
 	key := os.Getenv("LS_TOKEN")
 	if key == "" {
 		panic("Cannot access REST API: no API key found in $LS_TOKEN")
@@ -17,8 +17,8 @@ func ApiKey() string {
 	return key
 }
 
-// BaseUrl retrieves the base URL for the REST API from the environment.
-func BaseUrl() string {
+// CloudObsBaseUrl retrieves the base URL for the Cloud Obs REST API from the environment.
+func CloudObsBaseUrl() string {
 	url := os.Getenv("LS_REST_API_URL")
 	if url == "" {
 		panic("Cannot access REST API: no base URL found in $LS_REST_API_URL")
@@ -27,9 +27,9 @@ func BaseUrl() string {
 	return url
 }
 
-// GetResource submits a GET request to REST API at the given path, using the configured base URL and API key.
-func GetResource(path string) (*http.Response, error) {
-	url := BaseUrl() + path
+// GetCloudObsResource submits a GET request to the Cloud Obs REST API at the given path, using the configured base URL and API key.
+func GetCloudObsResource(path string) (*http.Response, error) {
+	url := CloudObsBaseUrl() + path
 	fmt.Printf("\n******* requesting resource: %s\n", url) // debugging output
 
 	client := &http.Client{}
@@ -38,7 +38,7 @@ func GetResource(path string) (*http.Response, error) {
 		return nil, err
 	}
 	req.Header.Add("User-Agent", "lightgraph-go")
-	req.Header.Add("Authorization", ApiKey())
+	req.Header.Add("Authorization", CloudObsApiKey())
 
 	resp, err := client.Do(req)
 	if err != nil {

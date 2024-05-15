@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"errors"
+
 	"github.com/djspinmonkey/lightgraph-go/restapi"
 )
 
@@ -87,7 +88,7 @@ func (p *Project) AlertDestination(id string) (*AlertDestination, error) {
 
 // FetchProject submits a GET request to the REST API for the project with the given org and project IDs.
 func FetchProject(org *Organization, projectID string) (*Project, error) {
-	response, err := restapi.GetResource("/" + org.ID + "/projects/" + projectID)
+	response, err := restapi.GetCloudObsResource("/" + org.ID + "/projects/" + projectID)
 	if err != nil {
 		return nil, errors.New("Failed to fetch project: " + err.Error())
 	}

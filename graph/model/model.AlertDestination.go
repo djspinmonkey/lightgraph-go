@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"errors"
+
 	"github.com/djspinmonkey/lightgraph-go/restapi"
 )
 
@@ -61,7 +62,7 @@ func (ad *AlertDestination) Type() string {
 
 // FetchAlertDestinations fetches all alert destinations for a given project from the backing API.
 func FetchAlertDestinations(project *Project) ([]*AlertDestination, error) {
-	response, err := restapi.GetResource("/" + project.Organization.ID + "/projects/" + project.ID + "/destinations")
+	response, err := restapi.GetCloudObsResource("/" + project.Organization.ID + "/projects/" + project.ID + "/destinations")
 	if err != nil {
 		return nil, errors.New("Failed to fetch alert destinations: " + err.Error())
 	}

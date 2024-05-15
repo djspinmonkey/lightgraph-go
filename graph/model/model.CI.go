@@ -1,5 +1,13 @@
 package model
 
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+
+	"github.com/djspinmonkey/lightgraph-go/restapi"
+)
+
 type CI struct {
 	CIIdentifier      *CIIdentifier
 	Name              string
@@ -12,8 +20,18 @@ type CI struct {
 	AttributesJSON    string
 }
 
-// FetchCI fetches a CI from the CMDB.
-func FetchCI(identifier *CIIdentifier) (*CI, error) {
-	// This is a stub implementation that returns a CI with the given identifier.
-	return &CI{CIIdentifier: identifier, Name: "stub"}, nil
+// FetchCI fetches a CI for a given className and sysID
+func FetchCI(c *CIIdentifier) (*CI, error) {
+	response, err := restapi.GetServiceNowResource(fmt.Sprintf("api/now/cmdb/instance/%s/%s", c.ClassName, c.SysID))
+	if err != nil {
+		return nil, errors.New("Failed to fetch CI: " + err.Error())
+	}
+
+	var ci CI
+	err = json.NewDecoder(response.Body).Decode(&ci)
+	if err != nil {
+		return nil, errors.New("Failed to parse CI: " + err.Error())
+	}
+
+	return &ci, nil
 }
