@@ -100,7 +100,7 @@ func (a *Alert) Destinations() ([]*AlertDestination, error) {
 // Status returns the current status of the alert. This will likely involve a request to the API.
 func (a *Alert) Status() (string, error) {
 	if a.status == UnknownStatus {
-		response, err := restapi.GetResource("/" + a.Project.Organization.ID + "/projects/" + a.Project.ID + "/metric_alerts/" + a.ID + "/status")
+		response, err := restapi.GetCloudObsResource("/" + a.Project.Organization.ID + "/projects/" + a.Project.ID + "/metric_alerts/" + a.ID + "/status")
 		if err != nil {
 			return "", errors.New("Failed to fetch alert status: " + err.Error())
 		}

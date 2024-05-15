@@ -101,7 +101,6 @@ type ComplexityRoot struct {
 		AssetLink         func(childComplexity int) int
 		AssetTag          func(childComplexity int) int
 		AssetValue        func(childComplexity int) int
-		AttributesJSON    func(childComplexity int) int
 		CIIdentifier      func(childComplexity int) int
 		Name              func(childComplexity int) int
 		SerialNumber      func(childComplexity int) int
@@ -440,13 +439,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CI.AssetValue(childComplexity), true
-
-	case "CI.attributesJSON":
-		if e.complexity.CI.AttributesJSON == nil {
-			break
-		}
-
-		return e.complexity.CI.AttributesJSON(childComplexity), true
 
 	case "CI.ciIdentifier":
 		if e.complexity.CI.CIIdentifier == nil {
@@ -1296,8 +1288,6 @@ func (ec *executionContext) fieldContext_Alert_associatedCIs(ctx context.Context
 				return ec.fieldContext_CI_assetDisplayValue(ctx, field)
 			case "assetValue":
 				return ec.fieldContext_CI_assetValue(ctx, field)
-			case "attributesJSON":
-				return ec.fieldContext_CI_attributesJSON(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CI", field.Name)
 		},
@@ -2758,47 +2748,6 @@ func (ec *executionContext) fieldContext_CI_assetValue(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _CI_attributesJSON(ctx context.Context, field graphql.CollectedField, obj *model.CI) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CI_attributesJSON(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AttributesJSON, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalOString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_CI_attributesJSON(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CI",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _CIIdentifier_className(ctx context.Context, field graphql.CollectedField, obj *model.CIIdentifier) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CIIdentifier_className(ctx, field)
 	if err != nil {
@@ -3681,8 +3630,6 @@ func (ec *executionContext) fieldContext_Query_ci(ctx context.Context, field gra
 				return ec.fieldContext_CI_assetDisplayValue(ctx, field)
 			case "assetValue":
 				return ec.fieldContext_CI_assetValue(ctx, field)
-			case "attributesJSON":
-				return ec.fieldContext_CI_attributesJSON(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CI", field.Name)
 		},
@@ -5930,8 +5877,6 @@ func (ec *executionContext) _CI(ctx context.Context, sel ast.SelectionSet, obj *
 			out.Values[i] = ec._CI_assetDisplayValue(ctx, field, obj)
 		case "assetValue":
 			out.Values[i] = ec._CI_assetValue(ctx, field, obj)
-		case "attributesJSON":
-			out.Values[i] = ec._CI_attributesJSON(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

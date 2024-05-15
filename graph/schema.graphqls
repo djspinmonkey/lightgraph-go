@@ -74,7 +74,6 @@ type CI {
     assetLink: String
     assetDisplayValue: String
     assetValue: String
-    attributesJSON: String
 }
 
 type CIIdentifier {
