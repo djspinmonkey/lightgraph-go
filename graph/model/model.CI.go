@@ -23,15 +23,17 @@ type CI struct {
 type JsonShapedCI struct {
 	Result struct {
 		Attributes struct {
-			Name              string `json:"name"`
-			AssetTag          string `json:"asset_tag"`
-			SubCategory       string `json:"sub_category"`
-			SerialNumber      string `json:"serial_number"`
-			AssetLink         string `json:"asset_link"`
-			AssetDisplayValue string `json:"asset_display_value"`
-			AssetValue        string `json:"asset_value"`
-			SysID             string `json:"sys_id"`
-			ClassName         string `json:"class_name"`
+			Name         string `json:"name"`
+			SubCategory  string `json:"sub_category"`
+			AssetTag     string `json:"asset_tag"`
+			SerialNumber string `json:"serial_number"`
+			SysID        string `json:"sys_id"`
+			ClassName    string `json:"class_name"`
+			Asset        struct {
+				AssetLink         string `json:"link"`
+				AssetDisplayValue string `json:"display_value"`
+				AssetValue        string `json:"value"`
+			}
 		}
 	}
 }
@@ -50,17 +52,14 @@ func FetchCI(c *CIIdentifier) (*CI, error) {
 	}
 
 	ci := CI{
-		CIIdentifier: &CIIdentifier{
-			SysID:     ciJSON.Result.Attributes.SysID,
-			ClassName: ciJSON.Result.Attributes.ClassName,
-		},
+		CIIdentifier:      c,
 		Name:              ciJSON.Result.Attributes.Name,
 		AssetTag:          ciJSON.Result.Attributes.AssetTag,
 		SubCategory:       ciJSON.Result.Attributes.SubCategory,
 		SerialNumber:      ciJSON.Result.Attributes.SerialNumber,
-		AssetLink:         ciJSON.Result.Attributes.AssetLink,
-		AssetDisplayValue: ciJSON.Result.Attributes.AssetDisplayValue,
-		AssetValue:        ciJSON.Result.Attributes.AssetValue,
+		AssetLink:         ciJSON.Result.Attributes.Asset.AssetLink,
+		AssetDisplayValue: ciJSON.Result.Attributes.Asset.AssetDisplayValue,
+		AssetValue:        ciJSON.Result.Attributes.Asset.AssetValue,
 	}
 
 	return &ci, nil
