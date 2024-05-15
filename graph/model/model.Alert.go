@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+
 	"github.com/djspinmonkey/lightgraph-go/restapi"
 )
 
@@ -148,7 +149,7 @@ func (a *Alerts) UnmarshalJSON(rawJson []byte) error {
 
 // FetchAlerts fetches all alerts for a given project from the backing API.
 func FetchAlerts(p *Project) ([]*Alert, error) {
-	response, err := restapi.GetResource("/" + p.Organization.ID + "/projects/" + p.ID + "/metric_alerts")
+	response, err := restapi.GetCloudObsResource("/" + p.Organization.ID + "/projects/" + p.ID + "/metric_alerts")
 	if err != nil {
 		return nil, errors.New("Failed to fetch alerts: " + err.Error())
 	}
@@ -171,7 +172,7 @@ func FetchAlerts(p *Project) ([]*Alert, error) {
 
 // FetchSnoozification fetches the Snoozification status for the alert from the backing API.
 func (a *Alert) FetchSnoozification() (Snoozification, error) {
-	response, err := restapi.GetResource("/" + a.Project.Organization.ID + "/projects/" + a.Project.ID + "/metric_alerts/" + a.ID + "/snoozes")
+	response, err := restapi.GetCloudObsResource("/" + a.Project.Organization.ID + "/projects/" + a.Project.ID + "/metric_alerts/" + a.ID + "/snoozes")
 	if err != nil {
 		return Snoozification{}, errors.New("Failed to fetch Snoozification: " + err.Error())
 	}

@@ -28,7 +28,7 @@ func (r *queryResolver) Organization(ctx context.Context, id string) (*model.Org
 }
 
 // Ci is the resolver for the ci field.
-func (r *queryResolver) Ci(ctx context.Context, sysID string, className string) (*model.CI, error) {
+func (r *queryResolver) Ci(ctx context.Context, className string, sysID string) (*model.CI, error) {
 	return &model.CI{SysID: sysID, ClassName: className, Name: "stub"}, nil
 }
 
