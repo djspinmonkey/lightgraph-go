@@ -32,8 +32,8 @@ type Alert {
     name: String!
     description: String!
     labels: [Label]
-    associatedCIIdentifiers: [CIIdentifier]
-    associatedCIs: [CI]
+    associatedCIIdentifiers: [CIIdentifier]!
+    associatedCIs: [CI]!
     enableNoDataAlert: Boolean
     enableNoDataDuration: Int
     operand: String
