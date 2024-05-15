@@ -27,6 +27,11 @@ func (r *queryResolver) Organization(ctx context.Context, id string) (*model.Org
 	return &model.Organization{ID: id, Name: id}, nil
 }
 
+// Ci is the resolver for the ci field.
+func (r *queryResolver) Ci(ctx context.Context, sysID string, className string) (*model.CI, error) {
+	return &model.CI{SysID: sysID, ClassName: className, Name: "stub"}, nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 

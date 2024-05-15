@@ -93,6 +93,19 @@ type ComplexityRoot struct {
 		Value func(childComplexity int) int
 	}
 
+	CI struct {
+		AssetDisplayValue func(childComplexity int) int
+		AssetLink         func(childComplexity int) int
+		AssetTag          func(childComplexity int) int
+		AssetValue        func(childComplexity int) int
+		AttributesJSON    func(childComplexity int) int
+		ClassName         func(childComplexity int) int
+		Name              func(childComplexity int) int
+		SerialNumber      func(childComplexity int) int
+		SubCategory       func(childComplexity int) int
+		SysID             func(childComplexity int) int
+	}
+
 	CustomHeader struct {
 		Key   func(childComplexity int) int
 		Value func(childComplexity int) int
@@ -122,6 +135,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Actor        func(childComplexity int) int
+		Ci           func(childComplexity int, sysID string, className string) int
 		Organization func(childComplexity int, id string) int
 	}
 }
@@ -132,6 +146,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Actor(ctx context.Context) (*model.Actor, error)
 	Organization(ctx context.Context, id string) (*model.Organization, error)
+	Ci(ctx context.Context, sysID string, className string) (*model.CI, error)
 }
 
 type executableSchema struct {
@@ -370,6 +385,76 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AuthValue.Value(childComplexity), true
 
+	case "CI.assetDisplayValue":
+		if e.complexity.CI.AssetDisplayValue == nil {
+			break
+		}
+
+		return e.complexity.CI.AssetDisplayValue(childComplexity), true
+
+	case "CI.assetLink":
+		if e.complexity.CI.AssetLink == nil {
+			break
+		}
+
+		return e.complexity.CI.AssetLink(childComplexity), true
+
+	case "CI.assetTag":
+		if e.complexity.CI.AssetTag == nil {
+			break
+		}
+
+		return e.complexity.CI.AssetTag(childComplexity), true
+
+	case "CI.assetValue":
+		if e.complexity.CI.AssetValue == nil {
+			break
+		}
+
+		return e.complexity.CI.AssetValue(childComplexity), true
+
+	case "CI.attributesJSON":
+		if e.complexity.CI.AttributesJSON == nil {
+			break
+		}
+
+		return e.complexity.CI.AttributesJSON(childComplexity), true
+
+	case "CI.className":
+		if e.complexity.CI.ClassName == nil {
+			break
+		}
+
+		return e.complexity.CI.ClassName(childComplexity), true
+
+	case "CI.name":
+		if e.complexity.CI.Name == nil {
+			break
+		}
+
+		return e.complexity.CI.Name(childComplexity), true
+
+	case "CI.serialNumber":
+		if e.complexity.CI.SerialNumber == nil {
+			break
+		}
+
+		return e.complexity.CI.SerialNumber(childComplexity), true
+
+	case "CI.subCategory":
+		if e.complexity.CI.SubCategory == nil {
+			break
+		}
+
+		return e.complexity.CI.SubCategory(childComplexity), true
+
+	case "CI.sysID":
+		if e.complexity.CI.SysID == nil {
+			break
+		}
+
+		return e.complexity.CI.SysID(childComplexity), true
+
 	case "CustomHeader.key":
 		if e.complexity.CustomHeader.Key == nil {
 			break
@@ -475,6 +560,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Actor(childComplexity), true
+
+	case "Query.ci":
+		if e.complexity.Query.Ci == nil {
+			break
+		}
+
+		args, err := ec.field_Query_ci_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Ci(childComplexity, args["sysID"].(string), args["className"].(string)), true
 
 	case "Query.organization":
 		if e.complexity.Query.Organization == nil {
@@ -668,6 +765,30 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_ci_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["sysID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sysID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["sysID"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["className"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("className"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["className"] = arg1
 	return args, nil
 }
 
@@ -2113,6 +2234,422 @@ func (ec *executionContext) fieldContext_AuthValue_value(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _CI_className(ctx context.Context, field graphql.CollectedField, obj *model.CI) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CI_className(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ClassName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CI_className(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CI",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CI_sysID(ctx context.Context, field graphql.CollectedField, obj *model.CI) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CI_sysID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SysID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CI_sysID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CI",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CI_name(ctx context.Context, field graphql.CollectedField, obj *model.CI) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CI_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CI_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CI",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CI_assetTag(ctx context.Context, field graphql.CollectedField, obj *model.CI) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CI_assetTag(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AssetTag, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CI_assetTag(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CI",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CI_subCategory(ctx context.Context, field graphql.CollectedField, obj *model.CI) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CI_subCategory(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SubCategory, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CI_subCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CI",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CI_serialNumber(ctx context.Context, field graphql.CollectedField, obj *model.CI) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CI_serialNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SerialNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CI_serialNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CI",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CI_assetLink(ctx context.Context, field graphql.CollectedField, obj *model.CI) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CI_assetLink(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AssetLink, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CI_assetLink(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CI",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CI_assetDisplayValue(ctx context.Context, field graphql.CollectedField, obj *model.CI) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CI_assetDisplayValue(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AssetDisplayValue, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CI_assetDisplayValue(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CI",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CI_assetValue(ctx context.Context, field graphql.CollectedField, obj *model.CI) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CI_assetValue(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AssetValue, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CI_assetValue(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CI",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CI_attributesJSON(ctx context.Context, field graphql.CollectedField, obj *model.CI) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CI_attributesJSON(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AttributesJSON, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CI_attributesJSON(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CI",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CustomHeader_key(ctx context.Context, field graphql.CollectedField, obj *model.CustomHeader) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CustomHeader_key(ctx, field)
 	if err != nil {
@@ -2840,6 +3377,83 @@ func (ec *executionContext) fieldContext_Query_organization(ctx context.Context,
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_organization_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_ci(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_ci(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Ci(rctx, fc.Args["sysID"].(string), fc.Args["className"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.CI)
+	fc.Result = res
+	return ec.marshalNCI2ᚖgithubᚗcomᚋdjspinmonkeyᚋlightgraphᚑgoᚋgraphᚋmodelᚐCI(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_ci(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "className":
+				return ec.fieldContext_CI_className(ctx, field)
+			case "sysID":
+				return ec.fieldContext_CI_sysID(ctx, field)
+			case "name":
+				return ec.fieldContext_CI_name(ctx, field)
+			case "assetTag":
+				return ec.fieldContext_CI_assetTag(ctx, field)
+			case "subCategory":
+				return ec.fieldContext_CI_subCategory(ctx, field)
+			case "serialNumber":
+				return ec.fieldContext_CI_serialNumber(ctx, field)
+			case "assetLink":
+				return ec.fieldContext_CI_assetLink(ctx, field)
+			case "assetDisplayValue":
+				return ec.fieldContext_CI_assetDisplayValue(ctx, field)
+			case "assetValue":
+				return ec.fieldContext_CI_assetValue(ctx, field)
+			case "attributesJSON":
+				return ec.fieldContext_CI_attributesJSON(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CI", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_ci_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -5036,6 +5650,66 @@ func (ec *executionContext) _AuthValue(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
+var cIImplementors = []string{"CI"}
+
+func (ec *executionContext) _CI(ctx context.Context, sel ast.SelectionSet, obj *model.CI) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, cIImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CI")
+		case "className":
+			out.Values[i] = ec._CI_className(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "sysID":
+			out.Values[i] = ec._CI_sysID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._CI_name(ctx, field, obj)
+		case "assetTag":
+			out.Values[i] = ec._CI_assetTag(ctx, field, obj)
+		case "subCategory":
+			out.Values[i] = ec._CI_subCategory(ctx, field, obj)
+		case "serialNumber":
+			out.Values[i] = ec._CI_serialNumber(ctx, field, obj)
+		case "assetLink":
+			out.Values[i] = ec._CI_assetLink(ctx, field, obj)
+		case "assetDisplayValue":
+			out.Values[i] = ec._CI_assetDisplayValue(ctx, field, obj)
+		case "assetValue":
+			out.Values[i] = ec._CI_assetValue(ctx, field, obj)
+		case "attributesJSON":
+			out.Values[i] = ec._CI_attributesJSON(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var customHeaderImplementors = []string{"CustomHeader"}
 
 func (ec *executionContext) _CustomHeader(ctx context.Context, sel ast.SelectionSet, obj *model.CustomHeader) graphql.Marshaler {
@@ -5321,6 +5995,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_organization(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "ci":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_ci(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -5810,6 +6506,20 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNCI2githubᚗcomᚋdjspinmonkeyᚋlightgraphᚑgoᚋgraphᚋmodelᚐCI(ctx context.Context, sel ast.SelectionSet, v model.CI) graphql.Marshaler {
+	return ec._CI(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCI2ᚖgithubᚗcomᚋdjspinmonkeyᚋlightgraphᚑgoᚋgraphᚋmodelᚐCI(ctx context.Context, sel ast.SelectionSet, v *model.CI) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CI(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
@@ -6302,6 +7012,16 @@ func (ec *executionContext) unmarshalOFloat2float64(ctx context.Context, v inter
 
 func (ec *executionContext) marshalOFloat2float64(ctx context.Context, sel ast.SelectionSet, v float64) graphql.Marshaler {
 	res := graphql.MarshalFloat(v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOID2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalID(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalID(v)
 	return res
 }
 
