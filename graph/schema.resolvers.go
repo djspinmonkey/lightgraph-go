@@ -29,7 +29,8 @@ func (r *queryResolver) Organization(ctx context.Context, id string) (*model.Org
 
 // Ci is the resolver for the ci field.
 func (r *queryResolver) Ci(ctx context.Context, sysID string, className string) (*model.CI, error) {
-	return &model.CI{SysID: sysID, ClassName: className, Name: "stub"}, nil
+	id := &model.CIIdentifier{SysID: sysID, ClassName: className}
+	return &model.CI{CIIdentifier: id, Name: "stub"}, nil
 }
 
 // Mutation returns MutationResolver implementation.

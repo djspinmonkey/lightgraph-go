@@ -1,8 +1,7 @@
 package model
 
 type CI struct {
-	SysID             string
-	ClassName         string
+	CIIdentifier      *CIIdentifier
 	Name              string
 	AssetTag          string
 	SubCategory       string
