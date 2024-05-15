@@ -37,6 +37,7 @@ type Alert {
     operand: String
     warningThreshold: Float
     criticalThreshold: Float
+    status: String
     alertingRules: [AlertingRule]!
     destinations: [AlertDestination]!
     snoozed: Boolean!
